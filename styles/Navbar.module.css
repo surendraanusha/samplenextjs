@@ -1,0 +1,11 @@
+.navContainer{
+    background-color: rgb(170, 170, 170);
+    font-size: 25px;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+}
+
+.liItem{
+    margin-right: 10px;
+}
