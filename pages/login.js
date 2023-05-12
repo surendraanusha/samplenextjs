@@ -57,10 +57,10 @@ const Login = (props) => {
     const imageTheme = bgStatus ? `light` : `dark`
     const parentBg = bgStatus ? `bg-[#fff]` : `bg-[#000]`
     const loginCardBg = bgStatus ? `bg-[#fff]` : `bg-[#212121]`
-    const imgUrl = `https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-${imageTheme}-theme-img.png`
+    const imgUrl = `https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png`
   return (
-    <div className={`h-[100vh] ${parentBg}  flex justify-center items-center p-3 md:p-0`}>
-        <div className={`${loginCardBg} shadow-2xl rounded-[5px] p-5 flex flex-col w-80`}>
+    <div className={`h-[100vh] bg-[#fff]  flex justify-center items-center p-3 md:p-0`}>
+        <div className={`bg-[#fff] shadow-2xl rounded-[5px] p-5 flex flex-col w-80`}>
             <img src ={`${imgUrl}`} alt='logo' className='w-auto h-14 mb-3'/>
             <form onSubmit={getUserInfo}>
             <div className='mb-3 mt-2'>
