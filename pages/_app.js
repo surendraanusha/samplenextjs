@@ -15,6 +15,15 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";                                       
 import { useEffect, useState } from "react"
+const solutions = [
+  { name: 'Home',linkValue:'/'},
+  { name: 'Trending',linkValue:'/trending'},
+  { name: 'Gaming',linkValue:'/gaming'},
+  { name: 'Saved videos',linkValue:'/saved-videos'},
+]
+
+import { Fragment } from 'react'
+import { Popover, Transition } from '@headlessui/react'
 
 export default function App({ Component, pageProps }) {
   const [status,setStatus] = useState(true)
@@ -31,7 +40,7 @@ export default function App({ Component, pageProps }) {
     setStatus(!status)
   }
   const pathValue = router.route
-  
+
   const receivedVideo = (videoInfor) =>{
     addSavedVideos(prevState =>([
       ...prevState,videoInfor
@@ -63,12 +72,33 @@ export default function App({ Component, pageProps }) {
               <button className="border-none bg-transparent mr-3 md:mr-6 cursor-pointer" onClick={changeTheme}>
                 {status ? <FaMoon size={25} fill='#000'/>  : <FiSun size={25} className='text-white'/>}
               </button>
-              <button className="border-none bg-transparent mr-3 md:mr-6 cursor-pointer visible md:hidden">
-                <GiHamburgerMenu size={27} fill={`${iconColor}`}/>
-              </button>
-              <button className="border-none bg-transparent mr-3 md:mr-6 cursor-pointer hidden md:inline-flex">
-                <HiUserCircle size={35} fill="#396692"/>
-              </button>
+              <Popover className='visible md:hidden'>
+                <Popover.Button className="inline-flex items-center mr-3 md:mr-6 mt-2 gap-x-1 text-sm font-semibold leading-6 text-gray-900">
+                  <GiHamburgerMenu size={27} fill={`${iconColor}`}/>
+                </Popover.Button>
+                <Popover.Panel className="absolute left-1/2 z-10 mt-3 flex w-screen max-w-max -translate-x-1/2 px-4">
+                    <div className={`${bgColor} w-screen max-w-md flex-auto overflow-hidden rounded-3xl text-sm leading-6 shadow-lg ring-1 ring-gray-900/5`}>
+                      <div className="p-4">
+                        {solutions.map((item) => (
+                          <div key={item.name} className="group relative flex gap-x-6 rounded-lg p-2 hover:bg-gray-50">
+                            <Link href={`${item.linkValue}`}>
+                              <p className={`${popUpTitle} text-lg font-sans font-bold`}>
+                                {item.name}
+                              </p>
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                </Popover.Panel>
+              </Popover>
+              <div className='flex w-min md:mr-6'>
+                <button className="border-none bg-transparent cursor-pointer hidden md:inline-flex">
+                  <HiUserCircle size={35} fill="#396692"/>
+                </button>
+                <div className='h-3 w-3 rounded-full bg-green-500 -ml-3 hidden md:inline-flex'></div>
+              </div>
+              
               <button className="border-none bg-transparent cursor-pointer visible md:hidden" onClick={userLogout}>
                 <FiLogOut size={27} className={`${logoutIcon}`}/>
               </button>
@@ -117,5 +147,3 @@ export default function App({ Component, pageProps }) {
     </div>
   )
 }
-// <Navbar/>
-// 
