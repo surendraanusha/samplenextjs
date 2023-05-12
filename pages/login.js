@@ -1,13 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react"
 import Cookies from "js-cookie";
- 
+import { useRouter } from 'next/router';
+import Head from "next/head";
 
-const Login = () => {
+const Login = (props) => {
+    const {bgStatus} = props
     const [userName,setUserName] = useState("")
     const [password,setPassword] = useState("")
     const [status,setStatus] = useState(true)
     const [error_msg,setMsg] = useState(null)
+    const router = useRouter()
 
     const getUsername = (event) =>{
         setUserName(event.target.value)
@@ -33,6 +36,7 @@ const Login = () => {
         const data = await response.json()
         if (response.ok === true) {
             Cookies.set('jwtToken', data.jwt_token, {expires: 30});
+            router.replace('/')
             if(error_msg !== null){
                 setMsg(null)
             }
@@ -50,11 +54,14 @@ const Login = () => {
             setStatus(true)
         }
     }
-
+    const imageTheme = bgStatus ? `light` : `dark`
+    const parentBg = bgStatus ? `bg-[#fff]` : `bg-[#000]`
+    const loginCardBg = bgStatus ? `bg-[#fff]` : `bg-[#212121]`
+    const imgUrl = `https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-${imageTheme}-theme-img.png`
   return (
-    <div className="h-[100vh] bg-slate-200 flex justify-center items-center p-3 md:p-0">
-        <div className='bg-white rounded-[5px] p-5 flex flex-col w-80'>
-            <img src ='https://assets.ccbp.in/frontend/react-js/nxt-watch-logo-light-theme-img.png' alt='logo' className='w-auto h-14 mb-3'/>
+    <div className={`h-[100vh] ${parentBg}  flex justify-center items-center p-3 md:p-0`}>
+        <div className={`${loginCardBg} shadow-2xl rounded-[5px] p-5 flex flex-col w-80`}>
+            <img src ={`${imgUrl}`} alt='logo' className='w-auto h-14 mb-3'/>
             <form onSubmit={getUserInfo}>
             <div className='mb-3 mt-2'>
                 <label htmlFor='userName' className='font-bold font-sans text-slate-700 text-base'>UserName</label>

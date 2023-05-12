@@ -1,19 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 import LeftPannel from '@/components/LeftPannel'
-import Navbar from '@/components/Navbar';
 import {AiOutlineClose} from 'react-icons/ai'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Cookies from "js-cookie";
 import Videos from '@/components/Videos';
+import Connection from '@/components/Connection';
+import Loader from '@/components/Loader';
+import Head from 'next/head';
+const apiStatusConstants = {
+  initial: 'INITIAL',
+  success: 'SUCCESS',
+  failure: 'FAILURE',
+  inProgress: 'IN_PROGRESS',
+}
+import { useRouter } from 'next/router';
 
 export default function Home(props) {
-  const{data} = props
-  const VideosArray = data.videos
+  const {bgStatus} = props
+  const [VideosArray,setVideosArray] = useState([])
   const [open,setOpen] = useState(true)
-  const [error_msg,setMsg] = useState(null)
+  const router = useRouter();
+  const [apiStatus,setApiStatus] = useState(apiStatusConstants.initial)
+
   const bgImageStyle={
     backgroundImage: `url("https://assets.ccbp.in/frontend/react-js/nxt-watch-banner-bg.png")`,
     height: '30vh',
@@ -44,57 +54,76 @@ export default function Home(props) {
     )
   }
 
+  
+  useEffect(()=>{
+    const jwtToken = Cookies.get('jwtToken')
 
-  return (
-    <div>
-      <Navbar/>
-      <div  className='bg-[#212121]'>
-        <div className='flex md:flex-row container mx-auto md:px-4 '>
-          <LeftPannel/>
-          <div className='flex-grow'>
-            {open ? renderBannerImage():''}
-            <div className='bg-[#212121] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4  py-3'>
-            {VideosArray.map(eachItem=>(
-              <Videos key={eachItem.id} data={eachItem}/>
-            ))}
-            </div>
+    if(jwtToken === undefined){
+      router.replace('/login')
+    }
+    else{
+      const getVideosData = async() =>{
+        setApiStatus(apiStatusConstants.inProgress)
+        const ApiUrl = `https://apis.ccbp.in/videos/all`
+        const options = {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          method: "GET",
+        };
+        const response = await fetch(ApiUrl, options);
+        if(response.ok === true){
+          const data = await response.json()
+          setVideosArray(data.videos)
+          setApiStatus(apiStatusConstants.success)
+        }
+        else{
+          setApiStatus(apiStatusConstants.failure)
+        }
+        
+      }
+  
+      getVideosData();
+
+    }
+  },[router])
+  
+  
+  function successView(){
+    return(
+      <div>
+          {open ? renderBannerImage():''}
+          <div className={`bg-[${bgHexValue}] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-3`}>
+          {VideosArray.map(eachItem=>(
+            <Videos key={eachItem.id} data={eachItem} bgStatus={bgStatus}/>
+          ))}
           </div>
+      </div>
+    )
+  }
+
+  function finalView(){
+    switch(apiStatus){
+      case apiStatusConstants.success:
+        return successView()
+      case apiStatusConstants.failure:
+        return <Connection bgStatus={bgStatus}/>
+      case apiStatusConstants.inProgress:
+        return <Loader bgStatus={bgStatus}/>
+      default:
+        return null
+    }
+  }
+  const bgHexValue = bgStatus ? '#fff': '#212121'
+  return (
+    <div className={`bg-[${bgHexValue}]`}>
+      <div className='flex md:flex-row container mx-auto md:px-4 '>
+        <LeftPannel data={45} bgHexValue={bgHexValue} bgStatus={bgStatus}/>
+        <div className={`w-[${100}%]  lg:pl-3`}>
+          {finalView()}
         </div>
       </div>
-    </div>
+  </div>
   )
 }
 
-
-export async function getStaticProps(){
-  const ApiUrl = `https://apis.ccbp.in/videos/all`
-  const jwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJhaHVsIiwicm9sZSI6IlBSSU1FX1VTRVIiLCJpYXQiOjE2MjMwNjU1MzJ9.D13s5wN3Oh59aa_qtXMo3Ec4wojOx0EZh8Xr5C5sRkU`
-    // const jwtToken = Cookies.get('jwtToken')
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: "GET",
-    };
-    const response = await fetch(ApiUrl, options);
-    const data = await response.json()
-    return{
-      props:{
-        data
-      }
-    }
- 
-}
-
-// the below lines of code is passing authentication information to the urls and this will giving proper results.
-// const jwtToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJhaHVsIiwicm9sZSI6IlBSSU1FX1VTRVIiLCJpYXQiOjE2MjMwNjU1MzJ9.D13s5wN3Oh59aa_qtXMo3Ec4wojOx0EZh8Xr5C5sRkU`
-//   const url = "https://apis.ccbp.in/profile"
-//   const Api = 'https://jsonplaceholder.typicode.com/users'
-//   const otpions = {
-//     headers:{
-//       Authorization: `Bearer ${jwtToken}`,
-//     },
-//     method:'GET'
-//   }
-//   const res = await fetch(url,otpions)
-//   const users = await res.json()
