@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar"
+
 import LeftPannel from "@/components/LeftPannel"
 import Videos from "@/components/Videos"
 import {FaFire} from 'react-icons/fa'
