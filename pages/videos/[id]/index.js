@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import Navbar from '@/components/Navbar'
 import LeftPannel from '@/components/LeftPannel'
 import ReactPlayer from 'react-player'
 import { BiLike ,BiDislike } from 'react-icons/bi'
